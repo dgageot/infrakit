@@ -3,13 +3,14 @@ package group
 import (
 	"errors"
 	"fmt"
+	"sync"
+	"time"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/docker/infrakit/pkg/plugin/group/types"
 	"github.com/docker/infrakit/pkg/spi/flavor"
 	"github.com/docker/infrakit/pkg/spi/group"
 	"github.com/docker/infrakit/pkg/spi/instance"
-	"sync"
-	"time"
 )
 
 const (
@@ -154,16 +155,17 @@ func (p *plugin) DescribeGroup(id group.ID) (group.Description, error) {
 
 func (p *plugin) DestroyGroup(gid group.ID) error {
 	context, err := p.doFree(gid)
+	if context == nil {
+		return err
+	}
 
-	if context != nil {
-		descriptions, err := context.scaled.List()
-		if err != nil {
-			return err
-		}
+	descriptions, err := context.scaled.List()
+	if err != nil {
+		return err
+	}
 
-		for _, desc := range descriptions {
-			context.scaled.Destroy(desc)
-		}
+	for _, desc := range descriptions {
+		context.scaled.Destroy(desc)
 	}
 
 	return err
@@ -235,7 +237,7 @@ func (p *plugin) validate(config group.Spec) (groupSettings, error) {
 		return noSettings, fmt.Errorf("Failed to find Flavor plugin '%s':%v", parsed.Flavor.Plugin, err)
 	}
 
-	if err := flavorPlugin.Validate(types.RawMessage(parsed.Flavor.Properties), parsed.Allocation); err != nil {
+	if err = flavorPlugin.Validate(types.RawMessage(parsed.Flavor.Properties), parsed.Allocation); err != nil {
 		return noSettings, err
 	}
 

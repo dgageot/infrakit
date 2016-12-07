@@ -3,11 +3,12 @@ package group
 import (
 	"errors"
 	"fmt"
-	log "github.com/Sirupsen/logrus"
-	"github.com/docker/infrakit/pkg/spi/instance"
 	"reflect"
 	"sync"
 	"time"
+
+	log "github.com/Sirupsen/logrus"
+	"github.com/docker/infrakit/pkg/spi/instance"
 )
 
 // TODO(wfarner): Converge this implementation with scaler.go, they share a lot of behavior.
@@ -99,12 +100,13 @@ func (q *quorum) converge() {
 	grp := sync.WaitGroup{}
 
 	for _, unknownInstance := range unknownIPs {
-		log.Warnf("Destroying instances with unknown IP address: %+v", unknownInstance)
+		unknownInst := unknownInstance
+		log.Warnf("Destroying instances with unknown IP address: %+v", unknownInst)
 
 		grp.Add(1)
 		go func() {
 			defer grp.Done()
-			q.scaled.Destroy(unknownInstance)
+			q.scaled.Destroy(unknownInst)
 		}()
 	}
 
