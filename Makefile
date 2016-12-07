@@ -98,6 +98,7 @@ endif
 	$(call build_binary,infrakit-instance-file,github.com/docker/infrakit/pkg/example/instance/file)
 	$(call build_binary,infrakit-instance-terraform,github.com/docker/infrakit/pkg/example/instance/terraform)
 	$(call build_binary,infrakit-instance-vagrant,github.com/docker/infrakit/pkg/example/instance/vagrant)
+	$(call build_binary,infrakit-instance-gce,github.com/docker/infrakit/pkg/example/instance/gce)
 
 install:
 	@echo "+ $@"
