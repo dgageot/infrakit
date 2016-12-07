@@ -21,7 +21,7 @@ AUTHORS: .mailmap .git/HEAD
 	git log --format='%aN <%aE>' | sort -fu > $@
 
 # Package list
-PKGS_AND_MOCKS := $(shell go list ./... | grep -v /vendor)
+PKGS_AND_MOCKS := $(shell go list ./... | grep -v vendor/)
 PKGS := $(shell echo $(PKGS_AND_MOCKS) | tr ' ' '\n' | grep -v /mock$)
 
 # Current working environment.  Set these explicitly if you want to cross-compile
@@ -49,7 +49,7 @@ vet:
 
 fmt:
 	@echo "+ $@"
-	@test -z "$$(gofmt -s -l . 2>&1 | grep -v ^vendor/ | tee /dev/stderr)" || \
+	@test -z "$$(gofmt -s -l . 2>&1 | grep -v vendor/ | tee /dev/stderr)" || \
 		(echo >&2 "+ please format Go code with 'gofmt -s', or use 'make fmt-save'" && false)
 
 fmt-save:
@@ -60,7 +60,7 @@ lint:
 	@echo "+ $@"
 	$(if $(shell which golint || echo ''), , \
 		$(error Please install golint: `make get-tools`))
-	@test -z "$$(golint ./... 2>&1 | grep -v ^vendor/ | grep -v mock/ | tee /dev/stderr)"
+	@test -z "$$(golint ./... 2>&1 | grep -v vendor/ | grep -v mock/ | tee /dev/stderr)"
 
 check-docs:
 	@echo "+ $@"
